@@ -1,6 +1,5 @@
 
 var machineState = true; //activity in chrome browser
-var machineSystem = {}; //information about the machine using the software
 var connection; //check if there is a connection on the browser
 
 /*
@@ -10,50 +9,12 @@ var keyRecords = new KeyboardRecords();
 var mouseRecords = new MouseRecords();
 
 /*
-  Calculate pause, saving 20min of records
-*/
-var recordsPause = []
-
-/*
-  To get information about the browser via framework Client JS
-*/
-
-function getBrowserData(){
-  var client =  new ClientJS();
-  var data = client.getBrowserData();
-  machineSystem = data.ua;
-}
-
-/*
-  Context Menus
-*/
-
-chrome.contextMenus.removeAll();
-chrome.contextMenus.create({ id: "webapp", title: "View More",contexts: ["browser_action"]});
-chrome.contextMenus.create({ id: "snooze", title: "Snooze", contexts: ["browser_action"]});
-chrome.contextMenus.create({ id: "logout", title: "Logout",contexts: ["browser_action"]});
-
-chrome.contextMenus.onClicked.addListener(function(info,tab) {
-  switch(info.menuItemId){
-    case "logout":  background.logoutUser();
-                    break;
-    case "webapp":  background.accessWebAppLink();
-                    break;
-    case "snooze":  snoozeFlag = true;
-                    break;
-    default: break;
-  }
-});
-
-/*
     Background SCRIPT "APP"
 */
 
 var background = {
 
   init : function(){
-
-    getBrowserData();
     connection = navigator.onLine ? true : false ; //check if there is a connection on the device
 
     chrome.runtime.onConnect.addListener(function(port) {
@@ -63,40 +24,6 @@ var background = {
           }
       });
     });
-    background.automaticLogin();
-  },
-
-  getUser: function(port,msg){
-    port.postMessage({fn:"setUser",message: {email: email, name: username}});
-  },
-
-  getLearning: function(port,msg){
-    message = { learning: Math.round(( lengthLearning / 300 ) * 100 ) , user: email }
-    port.postMessage({fn:"setData", message: message });
-  },
-
-  getSnoozeFlag: function(port,msg){
-    port.postMessage({fn:"setSnooze", message:snoozeFlag});
-  },
-
-  setSnooze: function(port,msg){
-    snoozeFlag = msg.message;
-  },
-
-  accessWebAppLink: function(port,msg){
-    accessWebAppLink();
-  },
-
-  /*
-    Login with notification
-  */
-
-  loggedIn: function(){
-    chrome.browserAction.setPopup({
-      popup: 'popups/actual_fatigue.html'
-    });
-    chrome.browserAction.setIcon({path:"images/38x38.png"});
-    background.sendLoginSucessNotif();
   },
 
   /*
@@ -104,7 +31,7 @@ var background = {
   */
 
   scriptData: function(port,message){
-    if(loggedIn && machineState && connection){
+    if(machineState && connection){
       var msg = message.msg;
       switch(msg.type){
         case "MD": //mouseDown
@@ -132,41 +59,6 @@ var background = {
    Notifications
   */
 
-  sendLoginSucessNotif: function() {
-   if(!snoozeFlag){
-      var opt = { type: "basic",
-                title: "Performetric",
-                message: "Login Successful",
-                iconUrl: "images/38x38.png",
-                requireInteraction: true,
-                buttons: [{
-                            title: "View More",
-                            iconUrl: "images/19x19.png"
-                          },
-                          {
-                            title: "Snooze",
-                            iconUrl: "images/19x19_grey.png"
-                          }]
-                };
-      chrome.notifications.create("loginSucessful",opt,function(){});
-      setTimeout(function(){chrome.notifications.clear("loginSucessful",function(){});},15000);
-    }
-  },
-
-  sendLoginUnsucessNotif: function() {
-   if(!snoozeFlag){
-      var opt = { type: "basic",
-                title: "Performetric",
-                message: "Username or password not valid",
-                iconUrl: "images/38x38.png",
-                requireInteraction: true
-                };
-      chrome.notifications.create("loginSucessful",opt,function(){});
-      setTimeout(function(){chrome.notifications.clear("loginSucessful",function(){});},15000);
-    }
-  },
-
-
  notificationLearning: function(){
     if(!snoozeFlag){
       var opt = { type: "basic",
@@ -181,21 +73,6 @@ var background = {
     }
   }
 }
-
-
-/*
-  add new Normalized details to the historyc to be used on the next normalization
-*/
-
-function addValue(details){
-  if(historyUserRecords.length == 3500){
-      historyUserRecords.push(details);
-      historyUserRecords.pop();
-  } else {
-    historyUserRecords.push(details);
-  }
-}
-
 
 function closePopup(){
   var windows = chrome.extension.getViews({type: "popup"});
@@ -212,7 +89,6 @@ function closePopup(){
 */
 
 chrome.alarms.create("Calculate Fatigue",{when: Date.now() + (5* 60 * 1000),periodInMinutes: 5});
-chrome.alarms.create("Renew History",{when: Date.now() + (1440 * 60 * 1000),periodInMinutes: 1440});
 
 chrome.alarms.onAlarm.addListener(function(alarm){
   if(alarm.name === "Calculate Fatigue"){
@@ -243,26 +119,6 @@ function clean5minRecords(){
   mouseRecords.clean();
 }
 
-
-/*
-  Event listeners for the notifications.
-*/
-
-chrome.notifications.onButtonClicked.addListener(function(notifId, btnIdx){
-  if (btnIdx === 0) {
-      accessWebAppLink();
-  } else if (btnIdx === 1) { // if it is needed another button
-    snoozeFlag = true;
-    var opt = { type: "basic",
-      title: "Performetric",
-      message: "Notifications are now disabled",
-      iconUrl: "images/38x38.png",
-      requireInteraction: true
-    }
-    chrome.notifications.create("snoozeON",opt,function(){});
-    setTimeout(function(){chrome.notifications.clear("snoozeON",function(){});},15000);
-  }
-});
 
 /*
   Collects data and works if chrome is active

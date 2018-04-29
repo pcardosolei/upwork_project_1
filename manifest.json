@@ -20,7 +20,7 @@
   ],
 
   "background": {
-    "scripts": ["vendor/js/jquery-3.2.1.min.js","js/createPDF.js","background.js"],
+    "scripts": ["vendor/js/jquery-3.2.1.min.js","vendor/js/createPDF.js","background.js"],
     "persistent": true
   },
 
@@ -30,5 +30,6 @@
     "js": ["vendor/js/jquery-3.2.1.min.js","script.js"]
     }
   ],
+
 
 }
