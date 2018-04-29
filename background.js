@@ -3,12 +3,6 @@ var machineState = true; //activity in chrome browser
 var machineSystem = {}; //information about the machine using the software
 var connection; //check if there is a connection on the browser
 
-var learning = false; //flag to see if its on the learning phase
-var lengthLearning; // <300 data learning
-
-var lastTimestamp = Date.now(); //last timestamp to check for pause
-var checkPaused = false; //when a alarm to recomendUser pops off
-
 /*
   Records to get saved
 */
@@ -70,18 +64,6 @@ var background = {
       });
     });
     background.automaticLogin();
-  },
-
-  tryLoginTalkDesk: function(port,msg){
-    loginTalkDesk(msg.message);
-  },
-
-  automaticLogin: function(){
-    if(connection){
-      checkLoginPossibility();
-    } else {
-      background.noConnectionDetected();
-    }
   },
 
   getUser: function(port,msg){
@@ -149,19 +131,6 @@ var background = {
   /*
    Notifications
   */
-
-  unsuccessfullTalkDesk: function(){
-    if(!snoozeFlag){
-      var opt = { type: "basic",
-                title: "Performetric",
-                message: "No Company Present",
-                iconUrl: "images/38x38.png",
-                requireInteraction: true
-              }
-      chrome.notifications.create("loginTalkDesk",opt,function(){});
-      setTimeout(function(){chrome.notifications.clear("loginTalkDesk",function(){});},15000);
-    }
-  },
 
   sendLoginSucessNotif: function() {
    if(!snoozeFlag){

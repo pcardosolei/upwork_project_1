@@ -9,17 +9,8 @@
 
 <body>
 
-<div> <!-- chrome app starts here -->
+  <div> <!-- chrome app starts here -->
     <div class="webkit-inline-box">
-
-      <div>
-        <img class="bitmap_img" src="../images/Bitmap.svg">
-      </div>
-
-      <div class="bitmap_div">
-        <p class="user-name" id="user-name"></p>
-        <p class="user-email" id="user-email"></p>
-      </div>
 
     </div>
     <div class="logout_div cursor_pointer">
@@ -27,7 +18,7 @@
       </div>
     <div class="div_after_before_body"> </div>
 
-<!-- corpo -->
+<!-- body -->
   <div class="webkit-inline-box">
     <div class="centered">
       <div id="ball_color" class="green-ball">
@@ -37,29 +28,15 @@
     </div>
   </div>
 
-
-  <!-- end of corpo -->
-
-   <div class="div_after_before_body margin-top-10"> </div>
-
-   <!-- footer -->
-   <div class="webkit-inline-box padding-bottom-10 cursor_pointer">
-
-       <div id="open-web-app"> VIEW MORE </div>
-
-    </div>
-
-    <div class="snooze_div cursor_pointer">
-          <div id="snooze"> SNOOZE </div>
-    </div>
-
-    </div>
-
+  <!-- end of body -->
 
 
 </div> <!-- chrome app ends here -->
+
 <script src="../vendor/js/jquery-3.2.1.min.js"></script>
-<script src="actual_fatigue.js"></script>
+<!-- CREATE PDF SCRIPT -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.5/jspdf.debug.js" integrity="sha384-CchuzHs077vGtfhGYl9Qtc7Vx64rXBXdIAZIPbItbNyWIRTdG0oYAqki3Ry13Yzu" crossorigin="anonymous"></script>
+<script src="createPDF.js"></script>
 </body>
 
 </html>

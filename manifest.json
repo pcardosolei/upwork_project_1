@@ -20,20 +20,15 @@
   ],
 
   "background": {
-    "scripts": ["vendor/js/res.js","vendor/js/client.min.js","vendor/js/jquery-3.2.1.min.js","js/Statistics.js","js/Screen.js","js/KeyboardRecords.js","js/MouseRecords.js","background.js"],
+    "scripts": ["vendor/js/jquery-3.2.1.min.js","js/createPDF.js","background.js"],
     "persistent": true
   },
 
   "content_scripts": [
     {
     "matches": ["<all_urls>"],
-    "js": ["vendor/js/md5.min.js","vendor/js/jquery-3.2.1.min.js","script.js"]
+    "js": ["vendor/js/jquery-3.2.1.min.js","script.js"]
     }
   ],
 
-  "externally_connectable": {
-    "matches": [
-      "*://*.performetric.net/*"
-    ]
-  }
 }
