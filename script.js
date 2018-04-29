@@ -1,5 +1,6 @@
 var port = chrome.runtime.connect({name: "page script"});
 
+
 $(document).mousedown(function(e) { //mouseDown
   var clicked = getButtonClicked(e);
   port.postMessage({fn:"scriptData",msg:{type: "MD", button: clicked, time: Date.now(), valueX: e.pageX, valueY: e.pageY}});
@@ -22,6 +23,15 @@ $(document).keydown(function(e) { //keyDOWN
 $(document).keyup(function(e) { //keyUP
   var key = getKeyPressed(e);
   port.postMessage({fn:"scriptData",msg:{type: "KU",time: Date.now(),key: key}});
+});
+
+
+
+/*
+  pass port here on resize
+*/
+$( window ).resize(function() {
+  console.log( "RESIZE WINDOW TO " + $( window ).height() + " " + $( window ).width() + " " );
 });
 
 

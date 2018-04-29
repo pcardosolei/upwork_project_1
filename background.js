@@ -5,8 +5,7 @@ var connection; //check if there is a connection on the browser
 /*
   Records to get saved
 */
-var keyRecords = new KeyboardRecords();
-var mouseRecords = new MouseRecords();
+var eventRecords = new EventRecorded();
 
 /*
     Background SCRIPT "APP"
@@ -16,7 +15,6 @@ var background = {
 
   init : function(){
     connection = navigator.onLine ? true : false ; //check if there is a connection on the device
-
     chrome.runtime.onConnect.addListener(function(port) {
       port.onMessage.addListener(function(msg) {
         if(msg.fn in background){
@@ -92,21 +90,7 @@ chrome.alarms.create("Calculate Fatigue",{when: Date.now() + (5* 60 * 1000),peri
 
 chrome.alarms.onAlarm.addListener(function(alarm){
   if(alarm.name === "Calculate Fatigue"){
-    if(connection && loggedIn){
-      calculateMetrics();
-    } else if (connection && !loggedIn){
-        retryLogin();
     }
-    clean5minRecords();
-  } else if(alarm.name === "Renew History"){ //Faz um login só para renovar todos os dados de 24h em 24h
-      checkLoginPossibility();
-  } else if(alarm.name === "Break Time"){
-    var flag = checkPause(Date.now());
-    if(flag){
-      notifyPause({ "username" : email, "totalTime" : 0 })
-    }
-    checkPaused = false;
-    recordsPause = [];
     chrome.alarms.clear(alarm.name);
   }
 });
@@ -115,10 +99,8 @@ chrome.alarms.onAlarm.addListener(function(alarm){
   Clean the keyRecords every 5 min
 */
 function clean5minRecords(){
-  keyRecords.clean();
-  mouseRecords.clean();
+  eventRecords.clean();
 }
-
 
 /*
   Collects data and works if chrome is active
@@ -126,9 +108,6 @@ function clean5minRecords(){
 */
 chrome.idle.onStateChanged.addListener(function(estado){
   machineState = estado === "active";
-  if(machineState){
-    retryLogin();
-  }
 });
 
 /*
