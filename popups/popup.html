@@ -3,7 +3,7 @@
 
 <head>
     <link rel="stylesheet" type="text/css" href="../css/style_sheet.css">
-    <link rel="stylesheet" type="text/css" href="../css/actual_fatigue.css">
+    <link rel="stylesheet" type="text/css" href="../css/popup.css">
     <title> Chrome App </title>
 </head>
 
@@ -14,19 +14,16 @@
 <!-- body -->
   <div class="webkit-inline-box">
     <div class="centered">
-      <button id="createPDF">pdf</button>
+      <input id="minutesToRecord" type="text" name="Time"><br>
+      <button id="createPDF">Record</button>
     </div>
   </div>
 
   <!-- end of body -->
+  </div> <!-- chrome app ends here -->
 
-
-</div> <!-- chrome app ends here -->
-
-<script src="../vendor/js/jquery-3.2.1.min.js"></script>
-<!-- CREATE PDF SCRIPT -->
-<script src="../vendor/js/jspdf.min.js"></script>
-<script src="../js/createPDF.js"></script>
+  <script src="../vendor/js/jquery-3.2.1.min.js"></script>
+  <script src="popup.js"></script>
 </body>
 
 </html>

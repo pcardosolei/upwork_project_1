@@ -1,19 +1,10 @@
 
+input {
+  color: black;
+}
 
 #logout img{
   margin-top: 13px;
-}
-
-.bitmap_img {
-  margin-top: 20px;
-  margin-left: 10px;
-}
-
-.bitmap_div {
-  margin-left: 10px;
-  display: inline-block;
-  line-height: 5px;
-  margin-top: 18px;
 }
 
 .div_after_before_body {

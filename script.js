@@ -1,39 +1,24 @@
 var port = chrome.runtime.connect({name: "page script"});
 
 
-$(document).mousedown(function(e) { //mouseDown
+$(document).mousedown(function(e) {
   var clicked = getButtonClicked(e);
-  port.postMessage({fn:"scriptData",msg:{type: "MD", button: clicked, time: Date.now(), valueX: e.pageX, valueY: e.pageY}});
-});
-$(document).mouseup(function(e) { //mouseUp
-  var clicked = getButtonClicked(e);
-  port.postMessage({fn:"scriptData",msg:{type: "MU", button: clicked, time: Date.now(), valueX: e.pageX, valueY: e.pageY}});
+  port.postMessage({fn: "scriptData", msg: clicked + " CLICK", time: Date.now()});
 });
 
-$(document).mousemove(function(e) { //mouseMove
-  port.postMessage({fn:"scriptData",msg:{type: "MOV",time:Date.now(),valueX: e.pageX,valueY: e.pageY}});
+$(document).mousemove(function(e) {
+  port.postMessage({fn: "scriptData", msg:"MOVE MOUSE TO " + event.pageX + "px " + event.pageY + "px",time:Date.now()});
 });
 
 // Keyboard
-$(document).keydown(function(e) { //keyDOWN
-  var key = getKeyPressed(e);
-  port.postMessage({fn:"scriptData",msg:{type: "KD",time: Date.now(),key: key}});
+$(document).keydown(function(e) {
+  port.postMessage({fn: "scriptData", msg:"KEYPRESS",time: Date.now()});
 });
 
-$(document).keyup(function(e) { //keyUP
-  var key = getKeyPressed(e);
-  port.postMessage({fn:"scriptData",msg:{type: "KU",time: Date.now(),key: key}});
-});
-
-
-
-/*
-  pass port here on resize
-*/
+// Resize
 $( window ).resize(function() {
-  console.log( "RESIZE WINDOW TO " + $( window ).height() + " " + $( window ).width() + " " );
+  port.postMessage({fn: "scriptData", msg:"RESIZE WINDOW TO " + $(window).height() + "px " + $(window).width() + "px",time: Date.now()})
 });
-
 
 function getButtonClicked(e){
     switch (event.which) {
@@ -47,15 +32,6 @@ function getButtonClicked(e){
           return "Right";
           break;
     }
-}
-
-
-function getKeyPressed(e){
-  if(e.keyCode == 8 || e.keyCode == 46){
-    return "ERROR"
-  } else {
-    return md5(e.key);
-  }
 }
 
 
