@@ -1,6 +1,5 @@
-
-var machineState = true; //activity in chrome browser
-var connection; //check if there is a connection on the browser
+var startRecord = false;
+var startDate;
 
 /*
   Records to get saved
@@ -24,36 +23,53 @@ var background = {
   },
 
   scriptData: function(port,message){
-    if(machineState && connection)
-      eventsRecords.addEvent(message.msg,message.time);
+    if(startRecord)
+      eventsRecords.addEvent(message.msg);
   },
 
   createPDF: function(port,message){
+    startRecord = false;
+    var x = 10;
+    var y = 10;
     var doc = new jsPDF();
-    doc.text('This file was created on a chrome extension', 10, 10);
-    console.log(eventsRecords.events.length);
-    for(var i = 0; i < eventsRecords.events.length; i++)
-      doc.text(eventsRecords.events[i].msg + " Date: " + eventsRecords.events[i].time, 10, 10);
-    doc.save('a4.pdf');
+    doc.text('Tracking from: 1/5/18 13:57' + startDate, x , y);
+    pageHeight= doc.internal.pageSize.height;
+
+    // Before adding new content
+    for(var i = 0; i < eventsRecords.events.length; i++){
+      if (y >= pageHeight - 100){
+        doc.addPage();
+        y = 0 // Restart height position
+      }
+      y += 10;
+      doc.text(eventsRecords.events[i].info, x, y );
+    }
+    var time = new Date().getTime();
+    doc.text('Tracking ended:' + Date(time).toString());
+    doc.save('recordStart.pdf');
     eventsRecords.clean();
   },
 
   createAlarmForCreatePDF: function(port,message){
     chrome.alarms.create("Record PDF",{when: Date.now() + (message.value * 60 * 1000)});
+    var time = new Date().getTime();
+    startDate = new Date(time).toString();
+    this.recordingStarted();
+    startRecord = true;
   },
 
   /*
    Notifications
   */
- notificationLearning: function(){
+ recordingStarted: function(){
       var opt = { type: "basic",
-                title: "Performetric",
-                message: "Learning phase is now complete",
-                iconUrl: "images/38x38.png",
-                requireInteraction: true
+                title: "Recording",
+                message: "It started to record",
+                iconUrl: "images/icon_128.png",
+                requireInteraction: false
                 };
-      chrome.notifications.create("LearningComplete",opt,function(){});
-      setTimeout(function(){chrome.notifications.clear("LearningComplete",function(){});},15000);
+      chrome.notifications.create("RecordStarted",opt,function(){});
+      setTimeout(function(){chrome.notifications.clear("RecordStarted",function(){});},15000);
   }
 }
 
@@ -74,8 +90,55 @@ chrome.alarms.onAlarm.addListener(function(alarm){
 */
 
 chrome.idle.onStateChanged.addListener(function(estado){
-  machineState = estado === "active";
+  eventsRecords.addEvent("Browser became " + estado);
 });
+
+/*
+  Full screen listener
+*/
+
+chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+    if (message === 'getScreenState') {
+        chrome.windows.get(sender.tab.windowId, function(chromeWindow) {
+            // "normal", "minimized", "maximized" or "fullscreen"
+            eventsRecord.addEvent("Chrome is " + chromeWindow.state + " size");
+        });
+    }
+});
+
+/*
+  Tabs
+*/
+
+chrome.tabs.onRemoved.addListener(function(){
+  eventsRecords.addEvent("Tab Removed");
+});
+
+chrome.tabs.onCreated.addListener(function(){
+  eventsRecords.addEvent("Tab Created");
+});
+
+chrome.tabs.onUpdated.addListener(function(){
+  eventsRecords.addEvent("Tab Updated");
+});
+
+chrome.tabs.onActivated.addListener(function(){
+  eventsRecords.addEvent("Tab Changed");
+});
+
+/*
+  Connectivity
+*/
+
+window.addEventListener('online', function(e) {
+  // Re-sync data with server.
+  eventsRecords.addEvent("Internet ON");
+}, false);
+
+window.addEventListener('offline', function(e) {
+  // Queue up events for server.
+  eventsRecords.addEvent("Internet OFF");
+}, false);
 
 /*
   Iniciar a app BackGround

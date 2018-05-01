@@ -15,8 +15,7 @@
     "alarms",
     "storage",
     "idle",
-    "notifications",
-    "contextMenus"
+    "notifications"
   ],
 
   "background": {

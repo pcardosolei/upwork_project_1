@@ -1,8 +1,7 @@
 
 class Event{
-    constructor(info,timestamp){
+    constructor(info){
         this.info = info;
-        this.timestamp = timestamp;
     }
 }
 
@@ -12,8 +11,8 @@ class EventsRecorded {
         this.events = [];
     }
 
-    addEvent(info,timestamp){
-        var aux = new Event(info,timestamp);
+    addEvent(info){
+        var aux = new Event(info);
         this.events.push(aux);
     }
 
