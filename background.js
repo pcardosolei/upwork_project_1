@@ -29,10 +29,9 @@ var background = {
 
   createPDF: function(port,message){
     startRecord = false;
-    var x = 10;
     var y = 10;
     var doc = new jsPDF();
-    doc.text('Tracking from: 1/5/18 13:57' + startDate, x , y);
+    doc.text('Tracking from: ' + startDate, (doc.internal.pageSize.width / 2) , y, 'center');
     pageHeight= doc.internal.pageSize.height;
 
     // Before adding new content
@@ -42,20 +41,22 @@ var background = {
         y = 0 // Restart height position
       }
       y += 10;
-      doc.text(eventsRecords.events[i].info, x, y );
+      doc.text(eventsRecords.events[i].info, (doc.internal.pageSize.width / 2), y, 'center' );
     }
     var time = new Date().getTime();
-    doc.text('Tracking ended:' + Date(time).toString());
+    doc.text('Tracking ended:' + Date(time).toString(),(doc.internal.pageSize.width / 2),y+10,'center');
     doc.save('recordStart.pdf');
     eventsRecords.clean();
   },
 
   createAlarmForCreatePDF: function(port,message){
+    closePopup();
     chrome.alarms.create("Record PDF",{when: Date.now() + (message.value * 60 * 1000)});
     var time = new Date().getTime();
     startDate = new Date(time).toString();
     this.recordingStarted();
     startRecord = true;
+
   },
 
   /*
@@ -125,6 +126,17 @@ chrome.tabs.onUpdated.addListener(function(){
 chrome.tabs.onActivated.addListener(function(){
   eventsRecords.addEvent("Tab Changed");
 });
+
+/*
+  Popup
+*/
+
+function closePopup(){
+  var windows = chrome.extension.getViews({type: "popup"});
+  if (windows.length) {
+    windows[0].close(); // Normally, there shouldn't be more than 1 popup
+  }
+}
 
 /*
   Connectivity
