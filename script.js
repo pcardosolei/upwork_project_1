@@ -1,5 +1,7 @@
 var port = chrome.runtime.connect({name: "page script"});
 
+var lastScrollTop = window.pageYOffset;
+
 $(document).mousedown(function(e) {
   var clicked = getButtonClicked(e);
   port.postMessage({fn: "scriptData", msg: clicked + " CLICK"});
@@ -22,7 +24,13 @@ $( window ).resize(function() {
 
 // Scroll
 $( window).scroll(function(){
-  port.postMessage({fn: "scriptData", msg:"SCROLL"});
+  var st = window.pageYOffset || document.documentElement.scrollTop;
+  if (st > lastScrollTop){
+    port.postMessage({fn: "scriptData", msg:"SCROLL DOWN"});
+   } else {
+    port.postMessage({fn: "scriptData", msg:"SCROLL UP"});
+  }
+  lastScrollTop = st;
 });
 
 function getButtonClicked(e){

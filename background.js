@@ -29,14 +29,19 @@ var background = {
 
   createPDF: function(port,message){
     startRecord = false;
-    var y = 10;
+    var y = 20;
     var doc = new jsPDF();
-    doc.text('Tracking from: ' + startDate, (doc.internal.pageSize.width / 2) , y, 'center');
+    doc.setFontType("bold");
+    doc.setFontSize(11);
+    doc.text('TRACKING FROM: ' + startDate, (doc.internal.pageSize.width / 2) , y, 'center');
+
+    doc.setFontType("normal");
+    doc.setFontSize(9);
     pageHeight= doc.internal.pageSize.height;
 
     // Before adding new content
     for(var i = 0; i < eventsRecords.events.length; i++){
-      if (y >= pageHeight - 100){
+      if (y >= pageHeight - 19){
         doc.addPage();
         y = 0 // Restart height position
       }
@@ -44,7 +49,9 @@ var background = {
       doc.text(eventsRecords.events[i].info, (doc.internal.pageSize.width / 2), y, 'center' );
     }
     var time = new Date().getTime();
-    doc.text('Tracking ended:' + Date(time).toString(),(doc.internal.pageSize.width / 2),y+10,'center');
+    doc.setFontType("bold");
+    doc.setFontSize(11);
+    doc.text('TRACKING ENDED:' + Date(time).toString().split("GMT")[0],(doc.internal.pageSize.width / 2),y+10,'center');
     doc.save('recordStart.pdf');
     eventsRecords.clean();
   },
@@ -91,7 +98,7 @@ chrome.alarms.onAlarm.addListener(function(alarm){
 */
 
 chrome.idle.onStateChanged.addListener(function(estado){
-  eventsRecords.addEvent("Browser became " + estado);
+  eventsRecords.addEvent("BROWSER BECAME " + estado);
 });
 
 /*
@@ -102,7 +109,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     if (message === 'getScreenState') {
         chrome.windows.get(sender.tab.windowId, function(chromeWindow) {
             // "normal", "minimized", "maximized" or "fullscreen"
-            eventsRecord.addEvent("Chrome is " + chromeWindow.state + " size");
+            eventsRecord.addEvent("CHROME IS " + chromeWindow.state + " SIZE");
         });
     }
 });
@@ -112,19 +119,19 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 */
 
 chrome.tabs.onRemoved.addListener(function(){
-  eventsRecords.addEvent("Tab Removed");
+  eventsRecords.addEvent("TAB REMOVED");
 });
 
 chrome.tabs.onCreated.addListener(function(){
-  eventsRecords.addEvent("Tab Created");
+  eventsRecords.addEvent("TAB CREATED");
 });
 
 chrome.tabs.onUpdated.addListener(function(){
-  eventsRecords.addEvent("Tab Updated");
+  eventsRecords.addEvent("TAB UPDATED");
 });
 
 chrome.tabs.onActivated.addListener(function(){
-  eventsRecords.addEvent("Tab Changed");
+  eventsRecords.addEvent("TAB CHANGED");
 });
 
 /*
@@ -144,12 +151,12 @@ function closePopup(){
 
 window.addEventListener('online', function(e) {
   // Re-sync data with server.
-  eventsRecords.addEvent("Internet ON");
+  eventsRecords.addEvent("INTERNET ON");
 }, false);
 
 window.addEventListener('offline', function(e) {
   // Queue up events for server.
-  eventsRecords.addEvent("Internet OFF");
+  eventsRecords.addEvent("INTERNET OFF");
 }, false);
 
 /*
