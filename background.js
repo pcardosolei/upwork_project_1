@@ -51,7 +51,7 @@ var background = {
     var time = new Date().getTime();
     doc.setFontType("bold");
     doc.setFontSize(11);
-    doc.text('TRACKING ENDED:' + Date(time).toString().split("GMT")[0],(doc.internal.pageSize.width / 2),y+10,'center');
+    doc.text('TRACKING ENDED:' + Date(time).toString().split("GMT",1),(doc.internal.pageSize.width / 2),y+10,'center');
     doc.save('recordStart.pdf');
     eventsRecords.clean();
   },
@@ -126,8 +126,9 @@ chrome.tabs.onCreated.addListener(function(){
   eventsRecords.addEvent("TAB CREATED");
 });
 
-chrome.tabs.onUpdated.addListener(function(){
-  eventsRecords.addEvent("TAB UPDATED");
+chrome.tabs.onUpdated.addListener(function(integer tabId, object changeInfo, Tab tab){
+  if(changeInfo.status)
+    eventsRecords.addEvent("TAB UPDATED");
 });
 
 chrome.tabs.onActivated.addListener(function(){
