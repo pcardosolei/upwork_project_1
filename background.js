@@ -118,17 +118,17 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
   Tabs
 */
 
-chrome.tabs.onRemoved.addListener(function(){
-  eventsRecords.addEvent("TAB REMOVED");
+chrome.tabs.onRemoved.addListener(function(tab){
+  eventsRecords.addEvent("TAB REMOVED " + tab.url);
 });
 
-chrome.tabs.onCreated.addListener(function(){
-  eventsRecords.addEvent("TAB CREATED");
+chrome.tabs.onCreated.addListener(function(tab){
+  eventsRecords.addEvent("TAB CREATED " + tab.url);
 });
 
-chrome.tabs.onUpdated.addListener(function(integer tabId, object changeInfo, Tab tab){
-  if(changeInfo.status)
-    eventsRecords.addEvent("TAB UPDATED");
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
+  if(changeInfo.status == "complete")
+    eventsRecords.addEvent("TAB UPDATED " + tab.url);
 });
 
 chrome.tabs.onActivated.addListener(function(){

@@ -15,7 +15,8 @@
     "alarms",
     "storage",
     "idle",
-    "notifications"
+    "notifications",
+    "tabs"
   ],
 
   "background": {
